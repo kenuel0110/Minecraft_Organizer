@@ -24,6 +24,8 @@ namespace MinecraftOrganizer
         {
             InitializeComponent();
 
+            this.main_frame.NavigationService.Navigate(new pages.Page_profile());
+
             if (this.WindowState == WindowState.Normal)
             {
                 image_restore.Source = new BitmapImage(new Uri(@"/icons/ic_restore.png", UriKind.Relative));

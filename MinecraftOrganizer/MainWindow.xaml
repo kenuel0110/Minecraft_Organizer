@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MinecraftOrganizer"
         AllowsTransparency="True"
+        Background="Transparent"
         mc:Ignorable="d"
-        Background="#2d2d30"
         WindowStyle="None"
         Title="Minecraft Organizer" Height="450" Width="800">
     <Grid>
@@ -23,18 +23,26 @@
                 <TextBlock Grid.Column="0" Text="Minecraft Organizer" FontWeight="SemiBold" Padding="16 0 0 0" VerticalAlignment="Center"/>
 
                 <StackPanel Grid.Column="1" HorizontalAlignment="Center" Orientation="Horizontal">
-                    <Button Name="btn_minimize" Margin="2" Padding="2" Height="20" Width="20" Style="{StaticResource MaterialDesignFlatButton}" Click="btn_minimize_Click">
+                    <Button Name="btn_minimize" Margin="2" Padding="2" Height="20" Width="20" Style="{StaticResource MaterialDesignFlatMidBgButton}" Background="Transparent" BorderBrush="Transparent" Click="btn_minimize_Click">
                         <Image Source="icons/ic_subtract.png"/>
                     </Button>
-                    <Button Name="btn_restore" Margin="2" Padding="2" Height="20" Width="20" Style="{StaticResource MaterialDesignFlatButton}" Click="btn_restore_Click">
+                    <Button Name="btn_restore" Margin="2" Padding="2" Height="20" Width="20" Style="{StaticResource MaterialDesignFlatMidBgButton}" Background="Transparent" BorderBrush="Transparent" Click="btn_restore_Click">
                         <Image Name="image_restore"/>
                     </Button>
-                    <Button Name="btn_close" Margin="2" Padding="2" Height="20" Width="20" Style="{StaticResource MaterialDesignFlatButton}" Click="btn_close_Click">
+                    <Button Name="btn_close" Margin="2" Padding="2" Height="20" Width="20" Style="{StaticResource MaterialDesignFlatMidBgButton}" Background="Transparent" BorderBrush="Transparent" Click="btn_close_Click">
                         <Image Source="icons/ic_close.png"/>
                     </Button>
                 </StackPanel>
-                
+
             </Grid>
+        </Border>
+        <Border Grid.Row="1">
+            <Border.Effect>
+                <BlurEffect Radius="20" KernelType="Gaussian"/>
+            </Border.Effect>
+            <Border.Background>
+                <SolidColorBrush Color="#252526" Opacity="0.95"/>
+            </Border.Background>
         </Border>
         <Frame Grid.Row="1" Name="main_frame"/>
     </Grid>
