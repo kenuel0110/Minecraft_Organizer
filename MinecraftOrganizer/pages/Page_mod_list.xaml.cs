@@ -1,7 +1,4 @@
-﻿using SharpCompress.Archives;
-using SharpCompress.Archives.Rar;
-using SharpCompress.Common;
-using SharpCompress.Readers;
+﻿using ICSharpCode.SharpZipLib.Zip;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -52,9 +49,31 @@ namespace MinecraftOrganizer.pages
 
             foreach (var i in allfiles)
             {
-                MessageBox.Show($"{System.IO.Path.GetFileNameWithoutExtension(i)}\n {i}");
-                ZipFile.ExtractToDirectory(i, $"profiles\\{selected_name}\\mods\\{System.IO.Path.GetFileNameWithoutExtension(i)}");
-            }
+                //MessageBox.Show($"{System.IO.Path.GetFileNameWithoutExtension(i)}\n {i}");
+
+                string zipPath = i;
+                string extractPath = $"profiles\\{selected_name}\\mods\\{System.IO.Path.GetFileNameWithoutExtension(i)}";
+                
+                Directory.CreateDirectory(extractPath);
+
+                string archivePath = zipPath;
+                using (FileStream fileStream = File.Open(archivePath, FileMode.Open))
+                {
+                    ZipArchive archive = new ZipArchive(fileStream, ZipArchiveMode.Update);
+                    string fileName = "fabric.mod.json";
+                    var file = archive.GetEntry(fileName);
+                    if (file != null)
+                    {
+                        file.ExtractToFile(System.IO.Path.Combine(extractPath, fileName));
+                    }
+                }
+
+                
+                    //FastZip fz = new FastZip();
+                    //fz.ExtractZip(i, $"profiles\\{selected_name}\\mods\\{System.IO.Path.GetFileNameWithoutExtension(i)}", "");
+
+                    //System.IO.Compression.ZipFile.ExtractToDirectory(i, $"profiles\\{selected_name}\\mods\\{System.IO.Path.GetFileNameWithoutExtension(i)}");
+                }
         }
 
         private void init_profile()
