@@ -74,7 +74,20 @@ namespace MinecraftOrganizer.pages
                     string fileName = "profiles.json";
                     string jsonString = File.ReadAllText(fileName);
 
-                    List<Classes.Profile> profile_list = JsonSerializer.Deserialize<List<Classes.Profile>>(jsonString);
+                    List<Classes.Profile> file_list = JsonSerializer.Deserialize<List<Classes.Profile>>(jsonString);
+
+                    List<Classes.Profile> profile_list = new List<Classes.Profile>();
+                    foreach (var i in file_list)
+                    {
+                        profile_list.Add(
+                            new Classes.Profile()
+                            {
+                                set = false,
+                                name = i.name,
+                                path = i.path,
+                                mods = i.mods
+                            });
+                    }
 
                     profile_list.Add(new Classes.Profile()
                     {

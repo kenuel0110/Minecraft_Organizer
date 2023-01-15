@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -24,7 +26,28 @@ namespace MinecraftOrganizer
         {
             InitializeComponent();
 
-            this.main_frame.NavigationService.Navigate(new pages.Page_profile());
+            int tb_name_profile = 0;
+
+            if (File.Exists("profiles.json"))
+            {
+                string fileName = "profiles.json";
+                string jsonString = File.ReadAllText(fileName);
+
+                List<Classes.Profile> profile_list = JsonSerializer.Deserialize<List<Classes.Profile>>(jsonString);
+
+                foreach (var i in profile_list)
+                {
+                    tb_name_profile += 1;
+                }
+            }
+
+            if (File.Exists("profiles.json") && tb_name_profile > 0)
+            {
+                this.main_frame.NavigationService.Navigate(new pages.Page_mod_list());
+            }
+            else {
+                this.main_frame.NavigationService.Navigate(new pages.Page_profile());
+            }
 
             if (this.WindowState == WindowState.Normal)
             {
