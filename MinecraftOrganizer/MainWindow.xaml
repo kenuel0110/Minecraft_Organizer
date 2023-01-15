@@ -44,6 +44,6 @@
                 <SolidColorBrush Color="#252526" Opacity="0.95"/>
             </Border.Background>
         </Border>
-        <Frame Grid.Row="1" Name="main_frame"/>
+        <Frame Grid.Row="1" NavigationUIVisibility="Hidden" Name="main_frame"/>
     </Grid>
 </Window>

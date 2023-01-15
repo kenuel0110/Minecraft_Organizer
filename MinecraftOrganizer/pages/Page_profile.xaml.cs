@@ -45,17 +45,73 @@ namespace MinecraftOrganizer.pages
 
         private void btn_next_Click(object sender, RoutedEventArgs e)
         {
-            if (tb_name_profile.Text == "")
+            bool try_another_name = false;
+            if (File.Exists("profiles.json"))
             {
-                tb_name_profile.BorderBrush = Brushes.DarkRed;
-            }
-            else {
-                tb_name_profile.BorderBrush = Brushes.Gray;
-
                 string fileName = "profiles.json";
                 string jsonString = File.ReadAllText(fileName);
 
                 List<Classes.Profile> profile_list = JsonSerializer.Deserialize<List<Classes.Profile>>(jsonString);
+
+                foreach (var i in profile_list) {
+                    if (i.name == tb_name_profile.Text) {
+                        try_another_name = true;
+                    }
+                }
+            }
+
+            if (tb_name_profile.Text == "" || try_another_name == true)
+            {
+                tb_name_profile.BorderBrush = Brushes.DarkRed;
+                tb_name_profile.Foreground = Brushes.DarkRed;
+            }
+            else {
+                tb_name_profile.BorderBrush = Brushes.Gray;
+                tb_name_profile.Foreground = Brushes.White;
+
+                if (File.Exists("profiles.json"))
+                {
+                    string fileName = "profiles.json";
+                    string jsonString = File.ReadAllText(fileName);
+
+                    List<Classes.Profile> profile_list = JsonSerializer.Deserialize<List<Classes.Profile>>(jsonString);
+
+                    profile_list.Add(new Classes.Profile()
+                    {
+                        set = true,
+                        name = tb_name_profile.Text,
+                        path = tb_folder_path.Text,
+                        mods = new List<string>()
+                    });
+                    string json = JsonSerializer.Serialize(profile_list);
+                    File.WriteAllText("profiles.json", json);
+                    NavigationService.Navigate(new pages.Page_mod_list());
+                }
+                else
+                {
+                    List<Classes.Profile> profile_list = new List<Classes.Profile>();
+
+                    profile_list.Add(new Classes.Profile()
+                    {
+                        set = true,
+                        name = tb_name_profile.Text,
+                        path = tb_folder_path.Text,
+                        mods = new List<string>()
+                    });
+                    string json = JsonSerializer.Serialize(profile_list);
+                    File.WriteAllText("profiles.json", json);
+                    NavigationService.Navigate(new pages.Page_mod_list());
+                }
+
+                if (!Directory.Exists("profiles"))
+                {
+                    Directory.CreateDirectory("profiles");
+                    if (!Directory.Exists($"profiles/{tb_name_profile.Text}"))
+                    {
+                        Directory.CreateDirectory($"profiles/{tb_name_profile.Text}");
+                    }
+                }
+
 
                 //Classes.Profile data_profile_old = JsonSerializer.Deserialize<Classes.Profile>(jsonString);
                 /*profile_list.Add(new Classes.Profile()
@@ -64,16 +120,8 @@ namespace MinecraftOrganizer.pages
                     path = data_profile_old.path,
                     mods = data_profile_old.mods
                 });*/
-                
-                profile_list.Add( new Classes.Profile()
-                {
-                    name = tb_name_profile.Text,
-                    path = tb_folder_path.Text,
-                    mods = new List<string>()
-                });
-                string json = JsonSerializer.Serialize(profile_list);
-                File.WriteAllText("profiles.json", json);
-                NavigationService.Navigate(new pages.Page_mod_list());
+
+
             }
         }
     }

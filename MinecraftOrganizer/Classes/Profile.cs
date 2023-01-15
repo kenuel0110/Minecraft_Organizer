@@ -8,14 +8,10 @@ namespace MinecraftOrganizer.Classes
 {
     public class Profile
     {
+        public bool set { get; set; }
         public string name { get; set; }
         public string path { get; set; }
         public List<String> mods { get; set; }
     }
-    public class Profile_file
-    {
-        public string name { get; set; }
-        public string path { get; set; }
-        public string mods { get; set; }
-    }
+
 }
