@@ -14,14 +14,18 @@
             <RowDefinition Height="40"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <Button Grid.Row="0" HorizontalAlignment="Left" materialDesign:HintAssist.Hint="Назад" Name="btn_go_back" Margin="5" Padding="6" Height="30" Width="30" Style="{StaticResource MaterialDesignFlatMidBgButton}" Background="#1e1e1e" BorderBrush="Transparent" Click="btn_go_back_Click">
-            <Image Source="/icons/ic_close.png"/>
-        </Button>
-        <Button Grid.Row="0" HorizontalAlignment="Right" materialDesign:HintAssist.Hint="Открыть в браузере" Name="btn_share_link" Margin="5" Padding="6" Height="30" Width="30" Style="{StaticResource MaterialDesignFlatMidBgButton}" Background="#1e1e1e" BorderBrush="Transparent" Click="btn_share_link_Click">
-            <Image Source="/icons/ic_share_link.png"/>
-        </Button>
-        <TextBlock Name="tb_uri" Grid.Row="0" HorizontalAlignment="Center" Margin="5"/>
-        <Border Grid.Row="1" Background="#252526">
+        <Border Grid.Row="0" Background="#252526">
+            <Grid>
+                <Button Grid.Row="0" HorizontalAlignment="Left" materialDesign:HintAssist.Hint="Назад" Name="btn_go_back" Margin="5" Padding="6" Height="30" Width="30" Style="{StaticResource MaterialDesignFlatMidBgButton}" Background="#1e1e1e" BorderBrush="Transparent" Click="btn_go_back_Click">
+                    <Image Source="/icons/ic_close.png"/>
+                </Button>
+                <Button Grid.Row="0" HorizontalAlignment="Right" materialDesign:HintAssist.Hint="Открыть в браузере" Name="btn_share_link" Margin="5" Padding="6" Height="30" Width="30" Style="{StaticResource MaterialDesignFlatMidBgButton}" Background="#1e1e1e" BorderBrush="Transparent" Click="btn_share_link_Click">
+                    <Image Source="/icons/ic_share_link.png"/>
+                </Button>
+                <TextBlock Name="tb_uri" Grid.Row="0" HorizontalAlignment="Center" Margin="5"/>
+            </Grid>
+        </Border>
+        <Border Grid.Row="1">
             <ContentControl x:Name="browserContainer" Content="Browser goes here" Foreground="#FFFFFF" Grid.Column="1"/>
         </Border>
     </Grid>

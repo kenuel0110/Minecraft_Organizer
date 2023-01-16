@@ -16,6 +16,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -33,6 +34,36 @@ namespace MinecraftOrganizer.pages
         List<String> selected_mods = new List<String>();
         List<Classes.Mod_data_local> mod_data = new List<Classes.Mod_data_local>();
         Dictionary<string, string> hyperLink = new Dictionary<string, string>();
+        Dictionary<string, string> mods_links = new Dictionary<string, string>();
+        #endregion
+
+        #region parser
+        public IEnumerable<string> AngleSharp(string Html)
+        {
+            List<string> hrefTags = new List<string>();
+
+            var parser = new AngleSharp.Html.Parser.HtmlParser();
+            var document = parser.ParseDocument(Html);
+            foreach (AngleSharp.Dom.IElement element in document.QuerySelectorAll("a"))
+            {
+                hrefTags.Add(element.GetAttribute("href"));
+            }
+
+            return hrefTags;
+        }
+        public List<string> AngleSharpMod(string Html)
+        {
+            List<string> hrefTags = new List<string>();
+
+            var parser = new AngleSharp.Html.Parser.HtmlParser();
+            var document = parser.ParseDocument(Html);
+            foreach (AngleSharp.Dom.IElement element in document.QuerySelectorAll("img"))
+            {
+                hrefTags.Add(element.GetAttribute("src"));
+            }
+
+            return hrefTags;
+        }
         #endregion
 
 
@@ -40,12 +71,37 @@ namespace MinecraftOrganizer.pages
         {
             InitializeComponent();
 
-            init_profile();
-            init_list_mod();
+            init_program();
+           
         }
 
-        private void init_list_mod()
+        async Task init_program()
         {
+            border_loading.Visibility = Visibility.Visible;
+            BlurEffect blur = new BlurEffect();         //создание эффекта блюр на "фон"
+            blur.Radius = 6;
+            grid_main.Effect = blur;             //применение эффекта
+            init_profile();
+            //if (!Directory.Exists($"profiles\\{selected_name}\\mods"))
+            //{
+            await Task.Run(() => get_data_mods());
+            //update_data_mods();
+            //}
+            init_list_mod();
+
+            border_loading.Visibility = Visibility.Hidden;
+            blur.Radius = 0;
+            grid_main.Effect = blur;             //отключение эффекта
+        }
+
+        private void update_data_mods()
+        {
+            
+        }
+
+        private void get_data_mods()
+        {
+            mods_links.Clear();
             string[] allfiles = Directory.GetFiles(selected_path);
             if (Directory.Exists($"profiles\\{selected_name}\\mods"))
             {
@@ -58,7 +114,7 @@ namespace MinecraftOrganizer.pages
 
                 string zipPath = i;
                 string extractPath = $"profiles\\{selected_name}\\mods\\{System.IO.Path.GetFileNameWithoutExtension(i)}";
-                
+
                 Directory.CreateDirectory(extractPath);
 
                 string archivePath = zipPath;
@@ -72,7 +128,7 @@ namespace MinecraftOrganizer.pages
                         file.ExtractToFile(System.IO.Path.Combine(extractPath, fileName));
                     }
                 }
-             
+
                 /*var cfApiClient = new ApiClient(apiKey, partnerId, contactEmail);
                 var mod = await cfApiClient.GetModAsync(modId);
                 */
@@ -85,8 +141,7 @@ namespace MinecraftOrganizer.pages
             }
 
             string[] allmods = Directory.GetDirectories($"profiles\\{selected_name}\\mods");
-            lv_mods.ItemsSource = mod_data;
-
+            
             var options = new JsonSerializerSettings
             {
                 Converters = { new Classes.ReplacingStringWritingConverter("\n", "") }
@@ -118,7 +173,8 @@ namespace MinecraftOrganizer.pages
                             path_folder = mod
                         });
                 }
-                else {
+                else
+                {
                     mod_data.Add(
                             new Classes.Mod_data_local()
                             {
@@ -154,9 +210,9 @@ namespace MinecraftOrganizer.pages
                     IEnumerable<string> links_mod = AngleSharp(htmlCode);
 
                     link_mods.Clear();
-                    foreach (string link in links_mod) 
+                    foreach (string link in links_mod)
                     {
-                        if (link.EndsWith($"{id_mod}.html") == true) 
+                        if (link.EndsWith($"{id_mod}.html") == true)
                         {
                             string[] id_mod_string = id_mod.Split('-');
                             string[] link_string = link.Split('/', '-');
@@ -177,7 +233,8 @@ namespace MinecraftOrganizer.pages
                         List<string> images_mod = AngleSharpMod(modhtmlCode);
 
                         //MessageBox.Show($"https://minecraft-inside.ru{images_mod[1]}");
-
+                        if(mods_links.ContainsKey(i.name) == false)
+                            mods_links.Add(i.name, images_mod[1]);
                         client.DownloadFile($"https://minecraft-inside.ru{images_mod[1]}", $"{i.path_folder}\\icon.jpg");
                     }
 
@@ -190,37 +247,14 @@ namespace MinecraftOrganizer.pages
                 }
                 //links_mod[9]
             }
-
             mod_data.OrderBy(x => x.name);
+        }
+
+        private void init_list_mod()
+        {
+            lv_mods.ItemsSource = mod_data;
             lv_mods.Items.Refresh();
 
-        }
-
-        public IEnumerable<string> AngleSharp(string Html)
-        {
-            List<string> hrefTags = new List<string>();
-
-            var parser = new AngleSharp.Html.Parser.HtmlParser();
-            var document = parser.ParseDocument(Html);
-            foreach (AngleSharp.Dom.IElement element in document.QuerySelectorAll("a"))
-            {
-                hrefTags.Add(element.GetAttribute("href"));
-            }
-
-            return hrefTags;
-        }
-        public List<string> AngleSharpMod(string Html)
-        {
-            List<string> hrefTags = new List<string>();
-
-            var parser = new AngleSharp.Html.Parser.HtmlParser();
-            var document = parser.ParseDocument(Html);
-            foreach (AngleSharp.Dom.IElement element in document.QuerySelectorAll("img"))
-            {
-                hrefTags.Add(element.GetAttribute("src"));
-            }
-
-            return hrefTags;
         }
 
         private void init_profile()
@@ -327,10 +361,12 @@ namespace MinecraftOrganizer.pages
             }
         }
 
-        private void lv_links_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void lv_links_SelectionChanged(object sender, MouseButtonEventArgs e)
         {
-            foreach (var i in hyperLink) {
-                if (lv_links.SelectedValue != null) {
+            foreach (var i in hyperLink)
+            {
+                if (lv_links.SelectedValue != null)
+                {
                     if (lv_links.SelectedValue.ToString() == i.ToString())
                     {
                         NavigationService.Navigate(new pages.Page_browser(i.Value));
