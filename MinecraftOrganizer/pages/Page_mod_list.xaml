@@ -17,38 +17,125 @@
 
         <Border Background="#252526">
             <Grid>
-                <ComboBox Name="cb_profile" IsReadOnly="True" Background="#1e1e1e" Foreground="#ffffff" Height="38" FontSize="12" BorderBrush="LightGray" MaxWidth="256" Width="256" HorizontalAlignment="Left" Margin="8">
-                </ComboBox>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="273"/>
+                    <ColumnDefinition Width="52"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <ComboBox Grid.Column="0" Name="cb_profile" IsReadOnly="True" Background="#1e1e1e" Foreground="#ffffff" Height="42" FontSize="12" BorderBrush="LightGray" MaxWidth="256" Width="256" HorizontalAlignment="Left" Margin="8"/>
+
+                <Button Grid.Column="1" materialDesign:HintAssist.Hint="Управление профилями" Name="btn_edit_profiles" Margin="5" Padding="6" Height="42" Width="42" Style="{StaticResource MaterialDesignFlatMidBgButton}" Background="#1e1e1e" BorderBrush="Transparent" Click="btn_edit_profiles_Click">
+                    <Image Source="/icons/ic_edit_profile.png"/>
+                </Button>
+
+                <Border Background="#1D1D1E" Grid.Column="6">
+                    <Button HorizontalAlignment="Right" materialDesign:HintAssist.Hint="Добавить мод" Name="btn_add_mod" Margin="8" Padding="6" Height="64" Width="64" Style="{StaticResource MaterialDesignFlatMidBgButton}" Background="#1e1e1e" BorderBrush="Transparent" Click="btn_add_mod_Click">
+                        <Image Source="/icons/ic_add_mod.png"/>
+                    </Button>
+                </Border>
             </Grid>
         </Border>
-        
+
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="273"/>
+                <ColumnDefinition Width="325"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
-            <ListView Name="lv_mods" Style="{StaticResource MaterialDesignListView}" Grid.Column="0">
+            <ListView Name="lv_mods" Style="{StaticResource MaterialDesignListView}" Grid.Column="0" SelectionChanged="lv_mods_SelectionChanged">
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel Orientation="Horizontal" Width="254" Height="32">
-                            <Image Margin="6" Width="20" Height="20">
+                        <StackPanel Orientation="Horizontal" MaxWidth="254" Height="46">
+                            <Image Margin="6" Width="30" Height="30">
                                 <Image.Source>
-                                    <Binding Path="ProductPhoto">
+                                    <Binding Path="icon">
                                         <Binding.TargetNullValue>
                                             <ImageSource>/icons/ic_not_found.png</ImageSource>
                                         </Binding.TargetNullValue>
                                     </Binding>
                                 </Image.Source>
                             </Image>
-                            <TextBlock Text="{Binding Path = name}" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding Path = name}" TextWrapping="Wrap" MaxWidth="200" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </StackPanel>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
 
             <Border Grid.Column="1" Background="#252526">
-                
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="50"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid Name="grid_mod_data" Visibility="Hidden">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="120"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+
+                        <Border>
+                            <Border.Background>
+                                <LinearGradientBrush EndPoint="0.0,0.5" StartPoint="0.5,0">
+                                    <GradientStop Color="#1D1A1F" Offset="0.6"/>
+                                    <GradientStop Color="#252526"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                                <Image Name="image_icon" Margin="16" Width="88" Height="88"/>
+                                <StackPanel Margin="8">
+                                    <TextBlock Name="tb_name" Margin="0 0 0 12" Text="Name"/>
+                                    <TextBlock Name="tb_version" Margin="0 0 0 8" Foreground="LightGray" Text="v.1.1.1"/>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Margin="0 0 8 0" Foreground="LightGray" Text="Авторство:"/>
+                                        <TextBlock Name="tb_authors"  Foreground="LightGray" Text="Name"/>
+                                    </StackPanel>
+                                </StackPanel>
+                                <Border Name="tb_is_client" Visibility="Hidden" VerticalAlignment="Top" Margin="8" HorizontalAlignment="Right" Height="36" Background="#380961" CornerRadius="8">
+                                    <TextBlock Text="Client" Margin="8" FontWeight="SemiBold" Background="#380961"/>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="1">
+                            <StackPanel Margin="16"  Orientation="Vertical">
+                                <TextBlock Name="tb_description" Margin="0 0 0 8" Foreground="LightGray" Text="Name"/>
+                                <StackPanel Name="sp_links" Margin="0 0 0 8" Orientation="Vertical">
+                                    <TextBlock Margin="0 0 0 8" Foreground="LightGray" Text="Ссылки:"/>
+                                    <ListView Name="lv_links" Style="{StaticResource MaterialDesignListView}" SelectionChanged="lv_links_SelectionChanged">
+                                        <ListView.ItemTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal" Height="28">
+                                                    <TextBlock Text="{Binding Path = Key}" TextWrapping="Wrap" MaxWidth="200" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ListView.ItemTemplate>
+                                    </ListView>
+                                </StackPanel>
+                                <StackPanel Margin="0 0 0 8" Orientation="Vertical">
+                                    <TextBlock Margin="0 0 0 8" Foreground="LightGray" Text="Лицензия:"/>
+                                    <TextBlock Name="tb_license" Margin="16 0 0 0" Foreground="LightGray" Text="Name"/>
+                                </StackPanel>
+                                <StackPanel Margin="0 0 0 8" Orientation="Vertical">
+                                    <TextBlock Margin="0 0 0 8" Foreground="LightGray" Text="Зависимости:"/>
+                                    <TextBlock Name="tb_depends" Margin="16 0 0 0" Foreground="LightGray" TextWrapping="Wrap" Text="Name"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </ScrollViewer>                        
+                        
+                    </Grid>
+
+                    <Border Background="#1D1D1E" Grid.Row="1">
+                        <StackPanel  HorizontalAlignment="Right" Orientation="Horizontal">
+                            <Button Grid.Column="1" materialDesign:HintAssist.Hint="Удалить мод" Name="btn_delete_mod" Margin="5" Padding="6" Height="42" Width="42" Style="{StaticResource MaterialDesignFlatMidBgButton}" Background="#372121" BorderBrush="Transparent" Click="btn_delete_mod_Click">
+                                <Image Source="/icons/ic_delete_mod.png"/>
+                            </Button>
+                            <Button Grid.Column="1" materialDesign:HintAssist.Hint="Редактировать мод" Name="btn_edit_mod" Margin="5" Padding="6" Height="42" Width="42" Style="{StaticResource MaterialDesignFlatMidBgButton}" Background="#1e1e1e" BorderBrush="Transparent" Click="btn_edit_mod_Click">
+                                <Image Source="/icons/ic_edit_mod.png"/>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+                </Grid>
             </Border>
 
         </Grid>
