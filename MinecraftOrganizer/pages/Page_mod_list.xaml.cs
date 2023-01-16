@@ -31,7 +31,7 @@ namespace MinecraftOrganizer.pages
         private string selected_path = "";
         private string selected_name = "";
         List<String> selected_mods = new List<String>();
-        List<Classes.Mod_data> mod_data = new List<Classes.Mod_data>();
+        List<Classes.Mod_data_local> mod_data = new List<Classes.Mod_data_local>();
         Dictionary<string, string> hyperLink = new Dictionary<string, string>();
         #endregion
 
@@ -100,7 +100,7 @@ namespace MinecraftOrganizer.pages
                     //MessageBox.Show(fileName);
                     Classes.Mod_data mod_data_json = JsonConvert.DeserializeObject<Classes.Mod_data>(jsonString, options);
                     mod_data.Add(
-                        new Classes.Mod_data()
+                        new Classes.Mod_data_local()
                         {
                             schemaVersion = mod_data_json.schemaVersion,
                             id = mod_data_json.id,
@@ -114,12 +114,13 @@ namespace MinecraftOrganizer.pages
                             contact = mod_data_json.contact,
                             authors = mod_data_json.authors,
                             depends = mod_data_json.depends,
-                            jars = mod_data_json.jars
+                            jars = mod_data_json.jars,
+                            path_folder = mod
                         });
                 }
                 else {
                     mod_data.Add(
-                            new Classes.Mod_data()
+                            new Classes.Mod_data_local()
                             {
                                 schemaVersion = 0,
                                 id = "",
@@ -133,11 +134,13 @@ namespace MinecraftOrganizer.pages
                                 contact = new Dictionary<string, string>(),
                                 authors = new List<string>(),
                                 depends = new Dictionary<string, string>(),
-                                jars = new List<Dictionary<string, string>>()
+                                jars = new List<Dictionary<string, string>>(),
+                                path_folder = mod
                             });
                 }
             }
 
+            List<string> link_mods = new List<string>();
             foreach (var i in mod_data)
             {
                 string id_mod = i.name.Replace(' ', '-').ToLower();
@@ -145,18 +148,39 @@ namespace MinecraftOrganizer.pages
 
                 using (WebClient client = new WebClient()) // WebClient class inherits IDisposable
                 {
-
+                    System.Threading.Thread.Sleep(1000);
                     string htmlCode = client.DownloadString(web_link_search);
 
                     IEnumerable<string> links_mod = AngleSharp(htmlCode);
-                    string result = null;
-                    if (links_mod.Where(s => s == $"{id_mod}.html").FirstOrDefault() != null)
-                        result = links_mod.Where(s => s == $"{id_mod}.html").FirstOrDefault();
-                    if (result != null) 
+
+                    link_mods.Clear();
+                    foreach (string link in links_mod) 
                     {
-                        string link_mod = $"https://minecraft-inside.ru/{result}";
-                        MessageBox.Show(link_mod);
+                        if (link.EndsWith($"{id_mod}.html") == true) 
+                        {
+                            string[] id_mod_string = id_mod.Split('-');
+                            string[] link_string = link.Split('/', '-');
+                            //MessageBox.Show($"{link_string.Count()}\n{link}");
+                            if (link_string.Count() - id_mod_string.Count() == 3)
+                            {
+                                link_mods.Add($"https://minecraft-inside.ru{link}");
+                                string link_mod = $"https://minecraft-inside.ru{link}";
+                                //MessageBox.Show($"{link_mod}\n{id_mod}");
+                            }
+                        }
                     }
+
+                    if (link_mods.Count() > 0)
+                    {
+                        System.Threading.Thread.Sleep(1000);
+                        string modhtmlCode = client.DownloadString(link_mods[0]);
+                        List<string> images_mod = AngleSharpMod(modhtmlCode);
+
+                        //MessageBox.Show($"https://minecraft-inside.ru{images_mod[1]}");
+
+                        client.DownloadFile($"https://minecraft-inside.ru{images_mod[1]}", $"{i.path_folder}\\icon.jpg");
+                    }
+
                     /*int ass = 1;
                     foreach (var a in links_mod) 
                     {
@@ -181,6 +205,19 @@ namespace MinecraftOrganizer.pages
             foreach (AngleSharp.Dom.IElement element in document.QuerySelectorAll("a"))
             {
                 hrefTags.Add(element.GetAttribute("href"));
+            }
+
+            return hrefTags;
+        }
+        public List<string> AngleSharpMod(string Html)
+        {
+            List<string> hrefTags = new List<string>();
+
+            var parser = new AngleSharp.Html.Parser.HtmlParser();
+            var document = parser.ParseDocument(Html);
+            foreach (AngleSharp.Dom.IElement element in document.QuerySelectorAll("img"))
+            {
+                hrefTags.Add(element.GetAttribute("src"));
             }
 
             return hrefTags;
