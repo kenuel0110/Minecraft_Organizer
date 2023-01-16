@@ -1,4 +1,5 @@
 ﻿using CurseForge.APIClient;
+using HtmlAgilityPack;
 using ICSharpCode.SharpZipLib.Zip;
 using Newtonsoft.Json;
 using System;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -83,7 +85,8 @@ namespace MinecraftOrganizer.pages
             }
 
             string[] allmods = Directory.GetDirectories($"profiles\\{selected_name}\\mods");
-            
+            lv_mods.ItemsSource = mod_data;
+
             var options = new JsonSerializerSettings
             {
                 Converters = { new Classes.ReplacingStringWritingConverter("\n", "") }
@@ -134,8 +137,53 @@ namespace MinecraftOrganizer.pages
                             });
                 }
             }
+
+            foreach (var i in mod_data)
+            {
+                string id_mod = i.name.Replace(' ', '-').ToLower();
+                string web_link_search = $"https://minecraft-inside.ru/search/?q={id_mod}";
+
+                using (WebClient client = new WebClient()) // WebClient class inherits IDisposable
+                {
+
+                    string htmlCode = client.DownloadString(web_link_search);
+
+                    IEnumerable<string> links_mod = AngleSharp(htmlCode);
+                    string result = null;
+                    if (links_mod.Where(s => s == $"{id_mod}.html").FirstOrDefault() != null)
+                        result = links_mod.Where(s => s == $"{id_mod}.html").FirstOrDefault();
+                    if (result != null) 
+                    {
+                        string link_mod = $"https://minecraft-inside.ru/{result}";
+                        MessageBox.Show(link_mod);
+                    }
+                    /*int ass = 1;
+                    foreach (var a in links_mod) 
+                    {
+                        MessageBox.Show($"{ass}\n{a}\n{i.name}");
+                        ass += 1;
+                    }*/
+                }
+                //links_mod[9]
+            }
+
             mod_data.OrderBy(x => x.name);
-            lv_mods.ItemsSource = mod_data;
+            lv_mods.Items.Refresh();
+
+        }
+
+        public IEnumerable<string> AngleSharp(string Html)
+        {
+            List<string> hrefTags = new List<string>();
+
+            var parser = new AngleSharp.Html.Parser.HtmlParser();
+            var document = parser.ParseDocument(Html);
+            foreach (AngleSharp.Dom.IElement element in document.QuerySelectorAll("a"))
+            {
+                hrefTags.Add(element.GetAttribute("href"));
+            }
+
+            return hrefTags;
         }
 
         private void init_profile()
