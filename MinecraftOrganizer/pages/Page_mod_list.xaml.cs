@@ -1,4 +1,5 @@
-﻿using CurseForge.APIClient;
+﻿using AngleSharp;
+using CurseForge.APIClient;
 using HtmlAgilityPack;
 using ICSharpCode.SharpZipLib.Zip;
 using Newtonsoft.Json;
@@ -64,6 +65,24 @@ namespace MinecraftOrganizer.pages
 
             return hrefTags;
         }
+        public List<string> AngleSharpModInfo(string Html)
+        {
+            List<string> hrefTags = new List<string>();
+
+            var parser = new AngleSharp.Html.Parser.HtmlParser();
+            var document = parser.ParseDocument(Html);
+
+            var mod_info = document.GetElementsByClassName("box__body")[17].QuerySelectorAll("div");
+            MessageBox.Show(mod_info[0].ToString());
+            for (var i = 0; i < mod_info.Count(); i++)
+            {
+                string name = mod_info[i].QuerySelector("h2").TextContent.Trim();
+                hrefTags.Add(name);
+                MessageBox.Show(name);
+            }
+
+            return hrefTags;
+        }
         #endregion
 
 
@@ -85,7 +104,7 @@ namespace MinecraftOrganizer.pages
             //if (!Directory.Exists($"profiles\\{selected_name}\\mods"))
             //{
             await Task.Run(() => get_data_mods());
-            //update_data_mods();
+            await Task.Run(() => update_data_mods());
             //}
             init_list_mod();
 
@@ -96,7 +115,112 @@ namespace MinecraftOrganizer.pages
 
         private void update_data_mods()
         {
-            
+            int index = 0;
+            string[] alldirectory = Directory.GetDirectories($"profiles\\{selected_name}\\mods");
+            foreach (var directory in alldirectory) 
+            {
+                if (Directory.GetFiles(directory).Count() == 2)
+                {
+                    mod_data[index] = new Classes.Mod_data_local()
+                    {
+                        schemaVersion = mod_data[index].schemaVersion,
+                        id = mod_data[index].id,
+                        provides = mod_data[index].provides,
+                        description = mod_data[index].description,
+                        name = mod_data[index].name,
+                        version = mod_data[index].version,
+                        environment = mod_data[index].environment,
+                        license = mod_data[index].license,
+                        icon = Directory.GetFiles(directory)[1],
+                        contact = mod_data[index].contact,
+                        authors = mod_data[index].authors,
+                        depends = mod_data[index].depends,
+                        jars = mod_data[index].jars,
+                        path_folder = mod_data[index].path_folder
+                    };
+                    MessageBox.Show(Directory.GetFiles(directory)[1]);
+
+                }
+                else if (Directory.GetFiles(directory).Count() == 1) 
+                {
+                    mod_data[index] = new Classes.Mod_data_local()
+                    {
+                        schemaVersion = mod_data[index].schemaVersion,
+                        id = mod_data[index].id,
+                        provides = mod_data[index].provides,
+                        description = mod_data[index].description,
+                        name = mod_data[index].name,
+                        version = mod_data[index].version,
+                        environment = mod_data[index].environment,
+                        license = mod_data[index].license,
+                        icon = null,
+                        contact = mod_data[index].contact,
+                        authors = mod_data[index].authors,
+                        depends = mod_data[index].depends,
+                        jars = mod_data[index].jars,
+                        path_folder = mod_data[index].path_folder
+                    };
+                }
+                index++;
+            }
+            /*
+            foreach (var link in mods_links) 
+            {
+                for (int a = 0; a > mod_data.Count(); a++) 
+                {
+                    mod_data[a] = new Classes.Mod_data_local()
+                    {
+                        schemaVersion = mod_data[a].schemaVersion,
+                        id = mod_data[a].id,
+                        provides = mod_data[a].provides,
+                        description = mod_data[a].description,
+                        name = mod_data[a].name,
+                        version = mod_data[a].version,
+                        environment = mod_data[a].environment,
+                        license = mod_data[a].license,
+                        icon = null,
+                        contact = mod_data[a].contact,
+                        authors = mod_data[a].authors,
+                        depends = mod_data[a].depends,
+                        jars = mod_data[a].jars,
+                        path_folder = mod_data[a].path_folder
+                    };
+                    //MessageBox.Show($"{link.Key}\n{mod.name}");
+                    MessageBox.Show($"{mod_data[a].name}\n{link.Key}");
+                    if (link.Key == mod_data[a].name)
+                    {
+                        mod_data[a] = new Classes.Mod_data_local()
+                        {
+                            schemaVersion = mod_data[a].schemaVersion,
+                            id = mod_data[a].id,
+                            provides = mod_data[a].provides,
+                            description = mod_data[a].description,
+                            name = mod_data[a].name,
+                            version = mod_data[a].version,
+                            environment = mod_data[a].environment,
+                            license = mod_data[a].license,
+                            icon = $"{mod_data[a].path_folder}\\icon.jpg",
+                            contact = mod_data[a].contact,
+                            authors = mod_data[a].authors,
+                            depends = mod_data[a].depends,
+                            jars = mod_data[a].jars,
+                            path_folder = mod_data[a].path_folder
+                        };*/
+
+                        /*var context = BrowsingContext.New(Configuration.Default);
+                        var doc = context.OpenAsync(link.Value.ToString());
+
+                        MessageBox.Show($"_______________________{link.Key}\n{mod.name}");
+                        using (WebClient client = new WebClient()) // WebClient class inherits IDisposable
+                        {
+                            System.Threading.Thread.Sleep(1000);
+                            string htmlCode = client.DownloadString(link.Key);
+                            List<string> mod_inf = AngleSharpModInfo(htmlCode);
+                        }*/
+                    //}
+                    //MessageBox.Show($"{mod_data[a].path_folder}\\icon.jpg");
+                //}
+            //}
         }
 
         private void get_data_mods()
@@ -247,11 +371,12 @@ namespace MinecraftOrganizer.pages
                 }
                 //links_mod[9]
             }
-            mod_data.OrderBy(x => x.name);
+            
         }
 
         private void init_list_mod()
         {
+            mod_data.OrderBy(x => x.name);
             lv_mods.ItemsSource = mod_data;
             lv_mods.Items.Refresh();
 
@@ -317,7 +442,10 @@ namespace MinecraftOrganizer.pages
             {
                 grid_mod_data.Visibility = Visibility.Visible;
                 var item_mod = mod_data[lv_mods.SelectedIndex];
-                image_icon.Source = new BitmapImage(new Uri(@item_mod.icon, UriKind.Relative));
+                if(item_mod.icon != null)
+                    image_icon.Source = new BitmapImage(new Uri(@item_mod.icon, UriKind.Relative));
+                else
+                    image_icon.Source = new BitmapImage(new Uri("/icons/ic_not_found.png", UriKind.Relative));
                 if (item_mod.environment != null)
                     if (item_mod.environment.ToLower() == "client")
                         tb_is_client.Visibility = Visibility.Visible;
