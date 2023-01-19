@@ -36,6 +36,9 @@ namespace MinecraftOrganizer.pages
         List<Classes.Mod_data_local> mod_data = new List<Classes.Mod_data_local>();
         Dictionary<string, string> hyperLink = new Dictionary<string, string>();
         Dictionary<string, string> mods_links = new Dictionary<string, string>();
+        private string apiKey = "$2a$10$DqpmSQtob4Ey/h24eDJYpeTz8YNFvqSP94HX48qrQ3fuufrp/0ZJW";
+        private int partnerId = 0;
+        private string contactEmail = "zeroonezero0110@gmail.com";
         #endregion
 
         #region parser
@@ -91,7 +94,7 @@ namespace MinecraftOrganizer.pages
             InitializeComponent();
 
             init_program();
-           
+
         }
 
         async Task init_program()
@@ -104,7 +107,7 @@ namespace MinecraftOrganizer.pages
             //if (!Directory.Exists($"profiles\\{selected_name}\\mods"))
             //{
             await Task.Run(() => get_data_mods());
-            await Task.Run(() => update_data_mods());
+            //await Task.Run(() => update_data_mods());
             //}
             init_list_mod();
 
@@ -117,7 +120,7 @@ namespace MinecraftOrganizer.pages
         {
             int index = 0;
             string[] alldirectory = Directory.GetDirectories($"profiles\\{selected_name}\\mods");
-            foreach (var directory in alldirectory) 
+            foreach (var directory in alldirectory)
             {
                 if (Directory.GetFiles(directory).Count() == 2)
                 {
@@ -141,7 +144,7 @@ namespace MinecraftOrganizer.pages
                     MessageBox.Show(Directory.GetFiles(directory)[1]);
 
                 }
-                else if (Directory.GetFiles(directory).Count() == 1) 
+                else if (Directory.GetFiles(directory).Count() == 1)
                 {
                     mod_data[index] = new Classes.Mod_data_local()
                     {
@@ -207,19 +210,19 @@ namespace MinecraftOrganizer.pages
                             path_folder = mod_data[a].path_folder
                         };*/
 
-                        /*var context = BrowsingContext.New(Configuration.Default);
-                        var doc = context.OpenAsync(link.Value.ToString());
+            /*var context = BrowsingContext.New(Configuration.Default);
+            var doc = context.OpenAsync(link.Value.ToString());
 
-                        MessageBox.Show($"_______________________{link.Key}\n{mod.name}");
-                        using (WebClient client = new WebClient()) // WebClient class inherits IDisposable
-                        {
-                            System.Threading.Thread.Sleep(1000);
-                            string htmlCode = client.DownloadString(link.Key);
-                            List<string> mod_inf = AngleSharpModInfo(htmlCode);
-                        }*/
-                    //}
-                    //MessageBox.Show($"{mod_data[a].path_folder}\\icon.jpg");
-                //}
+            MessageBox.Show($"_______________________{link.Key}\n{mod.name}");
+            using (WebClient client = new WebClient()) // WebClient class inherits IDisposable
+            {
+                System.Threading.Thread.Sleep(1000);
+                string htmlCode = client.DownloadString(link.Key);
+                List<string> mod_inf = AngleSharpModInfo(htmlCode);
+            }*/
+            //}
+            //MessageBox.Show($"{mod_data[a].path_folder}\\icon.jpg");
+            //}
             //}
         }
 
@@ -253,9 +256,9 @@ namespace MinecraftOrganizer.pages
                     }
                 }
 
-                /*var cfApiClient = new ApiClient(apiKey, partnerId, contactEmail);
-                var mod = await cfApiClient.GetModAsync(modId);
-                */
+                get_mod_data(306612);
+                
+                
 
 
                 //FastZip fz = new FastZip();
@@ -265,7 +268,7 @@ namespace MinecraftOrganizer.pages
             }
 
             string[] allmods = Directory.GetDirectories($"profiles\\{selected_name}\\mods");
-            
+
             var options = new JsonSerializerSettings
             {
                 Converters = { new Classes.ReplacingStringWritingConverter("\n", "") }
@@ -319,60 +322,63 @@ namespace MinecraftOrganizer.pages
                             });
                 }
             }
+        }
 
-            List<string> link_mods = new List<string>();
-            foreach (var i in mod_data)
+        private async Task get_mod_data(int modId)
+        {
+            var cfApiClient = new ApiClient(apiKey, partnerId, contactEmail);
+            var mod = await cfApiClient.GetModAsync(modId);
+            MessageBox.Show(mod.Data.Name.ToString());
+        }
+
+        //minecraft-inside parsing it`s in get_data_mods()
+        /*List<string> link_mods = new List<string>();
+        foreach (var i in mod_data)
+        {
+            string id_mod = i.name.Replace(' ', '-').ToLower();
+            string web_link_search = $"https://minecraft-inside.ru/search/?q={id_mod}";
+
+            using (WebClient client = new WebClient()) // WebClient class inherits IDisposable
             {
-                string id_mod = i.name.Replace(' ', '-').ToLower();
-                string web_link_search = $"https://minecraft-inside.ru/search/?q={id_mod}";
+                System.Threading.Thread.Sleep(1000);
+                string htmlCode = client.DownloadString(web_link_search);
 
-                using (WebClient client = new WebClient()) // WebClient class inherits IDisposable
+                IEnumerable<string> links_mod = AngleSharp(htmlCode);
+
+                link_mods.Clear();
+                foreach (string link in links_mod)
                 {
-                    System.Threading.Thread.Sleep(1000);
-                    string htmlCode = client.DownloadString(web_link_search);
-
-                    IEnumerable<string> links_mod = AngleSharp(htmlCode);
-
-                    link_mods.Clear();
-                    foreach (string link in links_mod)
+                    if (link.EndsWith($"{id_mod}.html") == true)
                     {
-                        if (link.EndsWith($"{id_mod}.html") == true)
+                        string[] id_mod_string = id_mod.Split('-');
+                        if (link_string.Count() - id_mod_string.Count() == 3)
                         {
-                            string[] id_mod_string = id_mod.Split('-');
-                            string[] link_string = link.Split('/', '-');
-                            //MessageBox.Show($"{link_string.Count()}\n{link}");
-                            if (link_string.Count() - id_mod_string.Count() == 3)
-                            {
-                                link_mods.Add($"https://minecraft-inside.ru{link}");
-                                string link_mod = $"https://minecraft-inside.ru{link}";
-                                //MessageBox.Show($"{link_mod}\n{id_mod}");
-                            }
+                            link_mods.Add($"https://minecraft-inside.ru{link}");
+                            string link_mod = $"https://minecraft-inside.ru{link}";
                         }
                     }
-
-                    if (link_mods.Count() > 0)
-                    {
-                        System.Threading.Thread.Sleep(1000);
-                        string modhtmlCode = client.DownloadString(link_mods[0]);
-                        List<string> images_mod = AngleSharpMod(modhtmlCode);
-
-                        //MessageBox.Show($"https://minecraft-inside.ru{images_mod[1]}");
-                        if(mods_links.ContainsKey(i.name) == false)
-                            mods_links.Add(i.name, images_mod[1]);
-                        client.DownloadFile($"https://minecraft-inside.ru{images_mod[1]}", $"{i.path_folder}\\icon.jpg");
-                    }
-
-                    /*int ass = 1;
-                    foreach (var a in links_mod) 
-                    {
-                        MessageBox.Show($"{ass}\n{a}\n{i.name}");
-                        ass += 1;
-                    }*/
                 }
-                //links_mod[9]
-            }
-            
-        }
+
+                if (link_mods.Count() > 0)
+                {
+                    System.Threading.Thread.Sleep(1000);
+                    string modhtmlCode = client.DownloadString(link_mods[0]);
+                    List<string> images_mod = AngleSharpMod(modhtmlCode);
+
+                    //MessageBox.Show($"https://minecraft-inside.ru{images_mod[1]}");
+                    if(mods_links.ContainsKey(i.name) == false)
+                        mods_links.Add(i.name, images_mod[1]);
+                    client.DownloadFile($"https://minecraft-inside.ru{images_mod[1]}", $"{i.path_folder}\\icon.jpg");
+                }
+                int ass = 1;
+                foreach (var a in links_mod) 
+                {
+                    MessageBox.Show($"{ass}\n{a}\n{i.name}");
+                    ass += 1;
+                }
+            }*/
+
+
 
         private void init_list_mod()
         {
