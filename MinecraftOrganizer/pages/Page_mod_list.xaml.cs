@@ -256,7 +256,7 @@ namespace MinecraftOrganizer.pages
                     }
                 }
 
-                get_mod_data(306612);
+                
                 
                 
 
@@ -324,12 +324,6 @@ namespace MinecraftOrganizer.pages
             }
         }
 
-        private async Task get_mod_data(int modId)
-        {
-            var cfApiClient = new ApiClient(apiKey, partnerId, contactEmail);
-            var mod = await cfApiClient.GetModAsync(modId);
-            MessageBox.Show(mod.Data.Name.ToString());
-        }
 
         //minecraft-inside parsing it`s in get_data_mods()
         /*List<string> link_mods = new List<string>();
@@ -410,7 +404,7 @@ namespace MinecraftOrganizer.pages
                         selected_mods.Clear();
                         foreach (var m in i.mods)
                         {
-                            selected_mods.Add(m);
+                            //selected_mods.Add(m);
                         }
                     }
                     profile_combobox.Add(i.name);

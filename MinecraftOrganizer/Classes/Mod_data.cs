@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MinecraftOrganizer.Classes
 {
-    class Mod_data
+    public class Mod_data
     {
         [DataMember]
         public int schemaVersion { get; set; }
@@ -40,7 +40,7 @@ namespace MinecraftOrganizer.Classes
 
     }
 
-    class Mod_data_local
+    public class Mod_data_local
     {
         [DataMember]
         public int schemaVersion { get; set; }

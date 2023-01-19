@@ -10,30 +10,84 @@
       Title="Профиль">
 
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition Height="70"/>
-        </Grid.RowDefinitions>
-        
-        
-        <StackPanel Margin="12" Grid.Row="0">
-            <TextBlock Text="ПРОФИЛЬ" FontSize="28" Margin="0 0 0 16" FontWeight="SemiBold"/>
-            <StackPanel Margin="0 0 0 16">
-                <TextBlock Text="Имя профиля" Margin="0 0 0 8"/>
-                <TextBox HorizontalAlignment="Left" Name="tb_name_profile" MaxLength="50" IsReadOnly="False" CaretBrush="#ffffff" MinWidth="480" MaxWidth="480" Foreground="#ffffff" FontSize="14" SelectionBrush="Gray" Style="{StaticResource MaterialDesignOutlinedTextBox}" BorderBrush="LightGray" MaxLines="1"/>
-            </StackPanel>
-            <StackPanel>
-                <TextBlock Text="Выбор папки с модами" Margin="0 0 0 8"/>
-                <StackPanel Orientation="Horizontal">
-                    <TextBox Name="tb_folder_path" IsReadOnly="True" CaretBrush="#ffffff" MinWidth="480" MaxWidth="480" Foreground="#ffffff" FontSize="14" SelectionBrush="Gray" Style="{StaticResource MaterialDesignOutlinedTextBox}" BorderBrush="LightGray" MaxLines="1"/>
-                    <Button Name="btn_folder_path" Margin="18 0 0 0" Style="{StaticResource MaterialDesignFlatMidBgButton}" BorderBrush="Transparent" Height="50" Width="80" Padding="2" Background="#1e1e1e" Click="btn_folder_path_Click">
-                        <Image Source="/icons/ic_open.png"/>
-                    </Button>
+        <Grid Name="grid_main">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="70"/>
+            </Grid.RowDefinitions>
+
+
+            <StackPanel Margin="12" Grid.Row="0">
+                <TextBlock Text="ПРОФИЛЬ" FontSize="28" Margin="0 0 0 16" FontWeight="SemiBold"/>
+                <StackPanel Margin="0 0 0 16">
+                    <TextBlock Text="Имя профиля" Margin="0 0 0 8"/>
+                    <TextBox HorizontalAlignment="Left" Name="tb_name_profile" MaxLength="50" IsReadOnly="False" CaretBrush="#ffffff" MinWidth="480" MaxWidth="480" Foreground="#ffffff" FontSize="14" SelectionBrush="Gray" Style="{StaticResource MaterialDesignOutlinedTextBox}" BorderBrush="LightGray" MaxLines="1"/>
                 </StackPanel>
+                <StackPanel Margin="0 0 0 16">
+                    <TextBlock Text="Выбор папки с модами" Margin="0 0 0 8"/>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBox Name="tb_folder_path" IsReadOnly="True" CaretBrush="#ffffff" MinWidth="480" MaxWidth="480" Foreground="#ffffff" FontSize="14" SelectionBrush="Gray" Style="{StaticResource MaterialDesignOutlinedTextBox}" BorderBrush="LightGray" MaxLines="1"/>
+                        <Button Name="btn_folder_path" Margin="18 0 0 0" Style="{StaticResource MaterialDesignFlatMidBgButton}" BorderBrush="Transparent" Height="50" Width="80" Padding="2" Background="#1e1e1e" Click="btn_folder_path_Click">
+                            <Image Source="/icons/ic_open.png"/>
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+
+                <Grid Margin="0 0 0 16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="220"/>
+                        <ColumnDefinition  Width="220"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition  Width="250"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Версия Minecraft" Margin="0 0 0 8"/>
+                        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Foreground="#ffffff" FontSize="14" Background="#1e1e1e" Padding="8" Name="tb_mc_version" MouseLeftButtonUp="tb_mc_version_MouseLeftButtonUp" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Text="Тулчейн" Margin="0 0 0 8"/>
+                        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Foreground="#ffffff" FontSize="14" Background="#1e1e1e" Padding="8"  Name="tb_tool" MouseLeftButtonUp="tb_tool_MouseLeftButtonUp"/>
+                    </StackPanel>
+                    <StackPanel  Grid.Column="3">
+                        <TextBlock Text="Сайт" Margin="0 0 0 8"/>
+                        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Foreground="#ffffff" FontSize="14" Background="#1e1e1e" Padding="8" Name="tb_sync_site" MouseLeftButtonUp="tb_sync_site_MouseLeftButtonUp"/>
+                    </StackPanel>
+                </Grid>
             </StackPanel>
-        </StackPanel>
-        <Button Grid.Row="1" Name="btn_next" Margin="0 0 18 0" HorizontalAlignment="Right" Style="{StaticResource MaterialDesignFlatMidBgButton}" BorderBrush="Transparent" Height="50" Width="80" Padding="2" Background="#1e1e1e" Click="btn_next_Click">
-            <Image Source="/icons/ic_next.png"/>
-        </Button>
+            <Button Grid.Row="1" Name="btn_next" Margin="0 0 18 0" HorizontalAlignment="Right" Style="{StaticResource MaterialDesignFlatMidBgButton}" BorderBrush="Transparent" Height="50" Width="80" Padding="2" Background="#1e1e1e" Click="btn_next_Click">
+                <Image Source="/icons/ic_next.png"/>
+            </Button>
+        </Grid>
+        <Border Name="border_combobox" Visibility="Hidden" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" MinHeight="200" Margin="50" MinWidth="400" CornerRadius="16" Background="#1e1e1e">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="16" ShadowDepth="3" Opacity="0.5"/>
+            </Border.Effect>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <Button Name="btn_close_combomenu" HorizontalAlignment="Left" Margin="5" Padding="2" Height="20" Width="20" Style="{StaticResource MaterialDesignFlatMidBgButton}" Background="Transparent" BorderBrush="Transparent" Click="btn_close_combomenu_Click">
+                    <Image Source="/icons/ic_close.png"/>
+                </Button>
+
+                <ListView Name="lv_combobox" Grid.Row="1" Style="{StaticResource MaterialDesignListView}" MouseLeftButtonUp="lv_combobox_MouseLeftButtonUp">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Height="42">
+                                <Image Margin="6" Width="30" Height="30">
+                                    <Image.Source>
+                                        <Binding Path="Value"/>
+                                    </Image.Source>
+                                </Image>
+                                <TextBlock Text="{Binding Path = Key}" TextWrapping="Wrap" MaxWidth="200" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>
+        </Border>
+        
     </Grid>
 </Page>
