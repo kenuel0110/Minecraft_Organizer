@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -265,6 +266,22 @@ namespace MinecraftOrganizer.pages
             BlurEffect blur = new BlurEffect();
             blur.Radius = 0;
             grid_main.Effect = blur;
+        }
+
+        public static bool CheckForInternetConnection()
+        {
+            try
+            {
+                using (var client = new WebClient())
+                using (var stream = client.OpenRead("http://www.google.com"))
+                {
+                    return true;
+                }
+            }
+            catch (WebException)
+            {
+                return false;
+            }
         }
 
         private void btn_close_combomenu_Click(object sender, RoutedEventArgs e)
